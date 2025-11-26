@@ -44,7 +44,7 @@ int menu_buscar_pasajero() {
 int menu_viajes() {
     nl();
 
-    printTitle("PASAJEROS");
+    printTitle("VIAJES");
     printf("Ingrese la opcion que desea realizar:\n");
     printf(" 1. Buscar.\n");
     printf(" 2. Listado de pasajeros.\n");
@@ -71,10 +71,10 @@ int menu_viajes_incompletos() {
 
     printTitle("LISTA DE VIAJES INCOMPLETOS");
     printf("Ingrese la opcion que desea realizar:\n");
-    printf(" 1. 30%\n");
-    printf(" 2. 50%\n");
-    printf(" 3. 80%\n");
-    printf(" 4. 100%\n");
+    printf(" 1. 30%%\n");
+    printf(" 2. 50%%\n");
+    printf(" 3. 80%%\n");
+    printf(" 4. 100%%\n");
     printf(" 0. Volver atras.\n");
 
     return leerEntero("\n> ", 0, 4);
@@ -85,7 +85,7 @@ int listar_viajes(Viaje *viajes) {
     int indx;
     printf("\nSelecciona el viaje deseado:\n");
     for(int i=0;i<8;i++){
-        printf(" [ %d ] %-20s [%0.2d/%0.2d/%0.4d] - $%.2f p/P\n", i+1, viajes[i].destino, viajes[i].fecha.dia, viajes[i].fecha.mes, viajes[i].fecha.anio, viajes[i].precio);
+        printf(" [ %d ] %-20s ( %0.2d/%0.2d/%0.4d ) - $%.2f p/P\n", i+1, viajes[i].destino, viajes[i].fecha.dia, viajes[i].fecha.mes, viajes[i].fecha.anio, viajes[i].precio);
     }
     indx = leerEntero("\n> ", 1, 8);
     indx--;

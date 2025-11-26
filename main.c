@@ -48,88 +48,59 @@ int main(void) {
 
 void pasajero() {
     int opc = menu_pasajeros();
+    int indx_pass = -1;
+    Pasajero *p = NULL;
 
     switch(opc) {
         // Buscar
         case 1:
-                // Comprobar si hay pasajeros
-                if(actual_pass == 0){
-                    nl(); nl();
-                    printf("[ ATENCION ] No hay pasajeros registrados.");
-                    nl(); nl();
-                    pause();
-                    break;
-                }
+            indx_pass = buscarPasajero(pasajeros, viajes, actual_pass);
+            if(indx_pass >= 0){
+                p = pasajeros+indx_pass;
+                mostrarPasajero(p);
+            }
 
-                opc = menu_buscar_pasajero();
-                Pasajero *p = NULL;
-                switch (opc) {
-                    // Por asiento
-                    case 1:
-                        p = buscarPasajeroPorAsiento(pasajeros, actual_pass, viajes);
-
-                        if(p != NULL){
-                            mostrarPasajero(p);
-                        }
-                        nl(); pause();
-                        break;
-
-                    // Por nombre
-                    case 2:
-                        p = buscarPasajeroPorNombre(pasajeros, actual_pass);
-
-                        if(p != NULL){
-                            mostrarPasajero(p);
-                        }
-                        nl(); pause();
-                        break;
-
-                    // Por telefono
-                    case 3:
-                        p = buscarPasajeroPorTelefono(pasajeros, actual_pass);
-
-                        if(p != NULL){
-                            mostrarPasajero(p);
-                        }
-                        nl(); pause();
-                        break;
-
-                    // Volver atras
-                    case 0: break;
-
-                    default:
-                        printf("\n[ ATENCION ] %d NO es una opcion valida\n", opc);
-                        break;
-                }
-                break;
+            nl(); pause();
+        break;
 
         // Capturar
         case 2:
-                // Evitar desborde de pasajeros
-                if(actual_pass >= MAX_PASAJEROS){
-                    nl(); nl();
-                    printf("[ ATENCION ] La base de datos de pasajeros esta llena");
-                    nl(); nl();
-                    pause();
-                    break;
-                }
-                pasajeros[actual_pass] = capturarPasajero(viajes, pasajeros, actual_pass);
-                actual_pass++;
-
+            // Evitar desborde de pasajeros
+            if(actual_pass >= MAX_PASAJEROS){
                 nl(); nl();
-                printTitle("Pasajero guardado con exito!");
+                printf("[ ATENCION ] La base de datos de pasajeros esta llena");
                 nl(); nl();
                 pause();
+                break;
+            }
+            pasajeros[actual_pass] = capturarPasajero(viajes, pasajeros, actual_pass);
+            actual_pass++;
 
-            break;
+            clear();
+            printTitle("Pasajero guardado con exito!");
+            nl(); nl();
+            pause();
+        break;
 
         // Modificar
         case 3:
-            break;
+            indx_pass = buscarPasajero(pasajeros, viajes, actual_pass);
+            if(indx_pass >= 0){
+                actualizarPasajero(pasajeros, viajes, indx_pass, actual_pass);
+            }
+
+            nl(); pause();
+        break;
 
         // Eliminar
         case 4:
-            break;
+            indx_pass = buscarPasajero(pasajeros, viajes, actual_pass);
+            if(indx_pass >= 0){
+                eliminar_pasajero(pasajeros, indx_pass, &actual_pass);
+            }
+
+            nl(); pause();
+        break;
 
         // Volver atras
         case 0: break;
@@ -146,14 +117,33 @@ void viaje() {
     switch(opc) {
         // Buscar
         case 1:
-            break;
+            int viaje_index = buscarViajePorNombre(viajes);
+            if(viaje_index >= 0){
+                clear();
+                Viaje v = viajes[viaje_index];
 
-        // Listado de pasajeros
-        case 2:
+                printf("==========================\n");
+                printf("Destino:     %s\n", v.destino);
+                printf("Fecha:       ( %0.2d/%0.2d/%0.4d )\n", v.fecha.dia, v.fecha.mes, v.fecha.anio);
+                printf("Precio base: %.2f\n\n", v.precio);
+
+                printf("Num. asientos:        %d\n", v.max_pas);
+                printf("Asientos vendidos:    %d\n", v.pasajeros);
+                printf("Asientos disponibles: %d\n", (v.max_pas - v.pasajeros));
+                printf("==========================\n");
+            }else{
+                clear();
+                printTitle("No se encontraron coincidencias");
+            }
+            pause();
+        break;
+
+        // Listado de pasajeros por viaje
+        case 2: listado_pasajero_viaje(pasajeros, viajes, actual_pass);
             break;
 
         // Lista de viajes incompletos
-        case 3:
+        case 3: viajes_incompletos(viajes, actual_pass);
             break;
 
         // Volver atras

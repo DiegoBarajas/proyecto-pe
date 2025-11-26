@@ -24,7 +24,10 @@ typedef struct {
 } Viaje;
 
 typedef struct {
-    char         nombre[100];
+    char         nombre[25];
+    char         apellidoP[25];
+    char         apellidoM[25];
+
     Fecha        fecha_nac;
     char         rfc[14];
     char         telefono[11];
