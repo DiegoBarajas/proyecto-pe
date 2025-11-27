@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void listar_viajes_incompletos(Viaje *viajes, float porcentaje);
+int listar_viajes_incompletos_corregido(Viaje *viajes, float porcentaje);
 
 Viaje crear_viaje(Fecha fecha, const char *destino, float precio, int max_pass) {
     Viaje nuevo;
@@ -157,53 +157,57 @@ void viajes_incompletos(Viaje *viajes, int total_pass) {
     clear();
 
     int opt = menu_viajes_incompletos();
+    int hay_resultados = 0;
+
     switch(opt) {
-        case 1: listar_viajes_incompletos(viajes, 30);
-        break;
+        case 1: hay_resultados = listar_viajes_incompletos_corregido(viajes, 30); break;
+        case 2: hay_resultados = listar_viajes_incompletos_corregido(viajes, 50); break;
+        case 3: hay_resultados = listar_viajes_incompletos_corregido(viajes, 80); break;
+        case 4: hay_resultados = listar_viajes_incompletos_corregido(viajes, 100); break;
+        case 0: break;
+        default: printf("Opcion no valida.\n"); pause();
+    }
 
-        case 2: listar_viajes_incompletos(viajes, 50);
-        break;
-
-        case 3: listar_viajes_incompletos(viajes, 80);
-        break;
-
-        case 4: listar_viajes_incompletos(viajes, 100);
-        break;
-
-        case 0:
-        break;
-
-        default:
-            printf("Opcion no valida.\n");
-            pause();
+    if (opt != 0 && !hay_resultados) {
+        printf("\nNo hay viajes con mas del %.0f%% de asientos libres.\n",
+               (opt == 1) ? 70 : (opt == 2) ? 50 : (opt == 3) ? 20 : 0);
     }
 
     if(opt != 0) pause();
 }
 
-// Void listado porcentajes
-void listar_viajes_incompletos(Viaje *viajes, float porcentaje) {
-    int count = 1;
-    for (int i = 0; i < NUM_VIAJES; i++) {
+int listar_viajes_incompletos_corregido(Viaje *viajes, float porcentaje) {
+    int count = 0;
+    int encontrados = 0;
 
-        // Cálculo correcto del porcentaje de ocupación y de libertad
+    // Explicación clara al usuario
+    printf("\n=== VIAJES CON MAS DEL %.0f%% DE ASIENTOS LIBRES ===\n", 100 - porcentaje);
+
+    for (int i = 0; i < NUM_VIAJES; i++) {
         float ocupados = (viajes[i].pasajeros * 100.0f) / viajes[i].max_pas;
         float libres = 100.0f - ocupados;
 
-        // Mostrar solo los viajes cuyo porcentaje libre sea MAYOR al solicitado
-        if (libres <= porcentaje) {
+        // LÓGICA: "no han completado un porcentaje de pasajeros"
+        // = Tienen MENOS del porcentaje% de ocupación
+        // = Tienen MÁS del (100-porcentaje)% de asientos libres
+        if (ocupados < porcentaje) {
+            encontrados++;
             printf("\n====================================\n");
-            printf("%d.- %s\n", count, viajes[i].destino);
+            printf("%d.- %s\n", encontrados, viajes[i].destino);
             printf("====================================\n");
-            printf("  Fecha:                 ( %0.2d/%0.2d/%0.4d )\n", viajes[i].fecha.dia, viajes[i].fecha.mes, viajes[i].fecha.anio);
+            printf("  Fecha:                 ( %0.2d/%0.2d/%0.4d )\n",
+                   viajes[i].fecha.dia, viajes[i].fecha.mes, viajes[i].fecha.anio);
             printf("  Costo base:            $%.2f p/P\n", viajes[i].precio);
             printf("  Capacidad total:       %d\n", viajes[i].max_pas);
             printf("  Pasajeros registrados: %d\n", viajes[i].pasajeros);
+            printf("  Asientos disponibles:  %d\n", viajes[i].max_pas - viajes[i].pasajeros);
             printf("  %% Ocupados:            %.2f%%\n", ocupados);
             printf("  %% Libres:              %.2f%%\n", libres);
             count++;
         }
     }
+
+    return count;
 }
 
 
